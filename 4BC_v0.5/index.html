@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<!--TODO eliminare il radio per il login, lasciarlo solo per la registrazione-->
+<html>
+    <head>
+        <title>Home</title>
+
+        <script>
+  
+            function Verifica(){
+                if (document.getElementById("cliente").checked == true){
+                    console.log("Sei un cliente")
+                    window.location.href = "registrazione_C.jsp";
+                }     
+                else{
+                    console.log("Sei un owner")
+                    window.location.href = "registrazione_O.jsp";
+                }
+            }
+        </script>
+
+    </head>
+
+    <body>
+        <h1>Benvenuto nella Home</h1>
+
+        <a href = "login.jsp">
+        <input type="button" value="Sign-in"/> <br> <br>
+        </a> 
+        
+        <!--<a href = "registazione.jsp">-->
+        <input type = "button" value="Sign-up" onclick = "Verifica()"> <br> 
+        <!--</a>-->
+
+        <input type = radio name = "tipo" id = "cliente" value = "cliente" checked> Client <br>
+        <input type = radio name = "tipo" id = "prop" value = "owner"> Owner <br> <br>
+
+    </body>
+</html>
