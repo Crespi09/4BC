@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Home</title>
+
+        <script>
+  
+            function Verifica(){
+                if (document.getElementById("tipo").selectedIndex == "0"){
+                    console.log("Sei un cliente")
+                    window.location.href = "registrazione_C.jsp";
+                }     
+                else if (document.getElementById("tipo").selectedIndex == "1"){
+                    console.log("Sei un owner")
+                    window.location.href = "registrazione_O.jsp";
+                }
+            }
+        </script>
+
+    </head>
+
+    <body>
+        <h1>Benvenuto nella Home</h1>
+        
+        <form action = "login.jsp" method="POST">
+            <select name = "tipo" id="tipo">
+                <option value = "cliente">Cliente</option>
+                <option value = "prop">Proprietario</option>
+            </select>
+            <br> <br>
+            <input type="submit" value="Sign-in"/> 
+        </form>
+
+        <input type = "button" value="Sign-up" onclick = "Verifica()"> <br> 
+
+
+    </body>
+</html>
