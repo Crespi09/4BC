@@ -79,10 +79,12 @@
             String query = "SELECT * FROM Prodotti WHERE idProp = '"+idProprietario+"';";
             String queryControllo = "SELECT nome,proprietario FROM Prodotti WHERE nome = '"+nome+"' AND idProp = '"+idProprietario+"';";
             String queryInserimento = "INSERT INTO Prodotti(nome,descrizione,quantita,prezzo,proprietario,idProp) VALUES ('"+nome+"' , '"+descrizione+"' , '"+ quantita+"' , '"+prezzo+"' , '"+usr+"' , '"+idProprietario+"')";
+            String querySelectProdottiVenduti = "SELECT  Prodotti.nome, Comprare.quantita FROM Prodotti INNER JOIN Comprare ON Prodotti.id = Comprare.idProdotto WHERE Comprare.idProdotto = Prodotti.id AND Prodotti.idProp = '"+idProprietario+"';";
 
             Statement st = connection.createStatement();
             ResultSet r1 = st.executeQuery(queryControllo);
             ResultSet r3 = st.executeQuery(query);
+            ResultSet r4 = st.executeQuery(querySelectProdottiVenduti);
 
 
             if((nome != null) || (descrizione != null) || (quantita != null) || (prezzo !=null)){
@@ -143,7 +145,7 @@
                 
                 while(r3.next()){   
                     String idProd = r3.getString(1); 
-                    System.out.println("id:"+idProd);
+                    //System.out.println("id:"+idProd);
                         out.println("<tr>");
                             out.println("<form action='modifica.jsp' method = 'post'>");
                                 out.println("<td><input type = 'text' id = 'nome' name = 'nome' placeholder = '"+r3.getString(2)+"'></td>");
@@ -162,6 +164,20 @@
 
             out.println("<br><p>Prodotti Venduti: </p><br>");
                 //inseririre i prodotti acquistati dai clienti
+                out.println("<table");
+                    out.println("<tr>");
+                    out.println("<th>Nome Prodotto</th>");
+                    out.println("<th>Quantita'</th>");
+                out.println("</tr>"); 
+
+                while(r4.next()){
+                    out.println("<tr>");
+                        out.println("<td>"+r4.getString("Prodotti.nome")+ "</td>");
+                        out.println("<td>"+r4.getString("Comprare.quantita")+ "</td>");
+                    out.println("</tr>");
+                }
+
+                out.println("</table");
             
         }
         catch(Exception e){
