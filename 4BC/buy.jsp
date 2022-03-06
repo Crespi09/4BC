@@ -56,18 +56,19 @@
                 quantita = request.getParameter("quantita");
             }
             
-            System.out.println("IDCLIENTE: " + idCliente);
-            System.out.println("IDPRODOTTO: " + idProd);
+            System.out.println("IDCLIENTE: " + idCliente); //debug
+            System.out.println("IDPRODOTTO: " + idProd); //debug
 
             connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
-            String querySelezionaProdotti = "SELECT * FROM Prodotti"; 
-        
+            String querySelezionaProdotti = "SELECT * FROM Prodotti WHERE (Prodotti.quantita <> NULL) OR (Prodotti.quantita <> 0)"; 
+            
+
             Statement st = connection.createStatement();
             ResultSet r = st.executeQuery(querySelezionaProdotti);
+            
 
             if(!aggiuntaCarrello.equals("true")){
             out.println("<table>");
-
                 out.println("<tr>");
                     out.println("<th>Nome</th>");
                     out.println("<th>Descrizione</th>");
@@ -77,57 +78,58 @@
                 out.println("</tr>");
                 
                 while(r.next()){   
-                     idProd = r.getString(1); 
-                        out.println("<tr>");
-                            out.println("<td>"+r.getString(2)+ "</td>");
-                            out.println("<td>"+r.getString(4)+ "</td>");
-                            out.println("<td>"+r.getString(6)+ "</td>");
-                            out.println("<td>"+r.getString(7)+ " €</td>");
+                    idProd = r.getString("id"); 
+                   
+                    String querySelezioneQuantita = "SELECT quantita FROM Prodotti WHERE id = '"+idProd+"';";
+                    ResultSet r3 = st.executeQuery(querySelezioneQuantita);
 
-                            
-                            
-                            //manca quantità
-                            out.println("<form action='buy.jsp' method='POST'>");
-                                aggiuntaCarrello = "true";
-                                out.println("<td><input type = 'number' id= 'quantita' name = 'quantita' min = '1' max = '100' placeholder = 'quantita'></td>");    
-                                out.println("<input type='hidden' id='idProd' name='idProd' value = '"+idProd+"'>");
-                                out.println("<input type='hidden' id='aggiuntaCarrello' name='aggiuntaCarrello' value = '"+aggiuntaCarrello+"'>");
+                    while(r3.next()){
+                        int quantitaMax = Integer.parseInt(r3.getString("quantita"));
+                            out.println("<tr>");
+                                out.println("<td>"+r.getString(2)+ "</td>");
+                                out.println("<td>"+r.getString(4)+ "</td>");
+                                out.println("<td>"+r.getString(6)+ "</td>");
+                                out.println("<td>"+r.getString(7)+ " €</td>");
 
-                                out.println("<td> <input type= 'submit' class = 'btn1' value= 'Aggiungi al Carrello'></td>");
-                            out.println("</form>");
+                                out.println("<form action='buy.jsp' method='POST'>");
+                                    aggiuntaCarrello = "true";
+                                    out.println("<td><input type = 'number' id= 'quantita' name = 'quantita' min = '1' max = '"+quantitaMax+"' placeholder = 'quantita'></td>");    
+                                    out.println("<input type='hidden' id='idProd' name='idProd' value = '"+idProd+"'>");
+                                    out.println("<input type='hidden' id='aggiuntaCarrello' name='aggiuntaCarrello' value = '"+aggiuntaCarrello+"'>");
 
-                        out.println("</tr>");
+                                    out.println("<td> <input type= 'submit' class = 'btn1' value= 'Aggiungi al Carrello'></td>");
+                                out.println("</form>");
+
+                            out.println("</tr>");
+                    }
                 }
             out.println("</table>");
+            out.println("<br><a href = 'carrello.jsp'><button class = 'btn2'>Carrello</button></a><br>");
             }else{
                 String queryAggiungiProdottoCarrello = "INSERT INTO Comprare (idCliente, idProdotto, quantita) VALUES ('"+idCliente+"', '"+idProd+"', '"+quantita+"');";
                 String queryVerifica = "SELECT * FROM Comprare WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                String queryUpdateComprare = "UPDATE Comprare SET quantita = quantita + '"+Integer.parseInt(quantita)+"' WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                
-                //int quantitaAppoggio = Integer.parseInt(quantita);
+                String querySelectQuantitaProdotti = "SELECT quantita FROM Prodotti WHERE id = '"+idProd+"';";
+
                 Statement st1 = connection.createStatement();
-                //verificare se il prodotto da inserire e l'id del cliente siano già presenti nella tabella Comprare, se si modificare con UPDATE la quantità
                 ResultSet r1 = st1.executeQuery(queryVerifica);
-                if(r1.next()){
-                    /*
-                    System.out.println("QUANTITA APPOGGIO1: "+ quantitaAppoggio);
-                    quantitaAppoggio = quantitaAppoggio + Integer.parseInt(quantita);
-                    System.out.println("QUANTITA: "+quantita);
-                    System.out.println("QUANTITA APPOGGIO2: " + quantitaAppoggio);
-                    //String queryUpdateComprare = "UPDATE Comprare SET quantita =  '"+quantitaAppoggio+"' WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                    */
+                ResultSet r2 = st1.executeQuery(querySelectQuantitaProdotti);
+
+                if(r1.next() && r2.next()){
+                    int quantitaAppoggio = Integer.parseInt(r1.getString("quantita"));
+                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
+                    String queryUpdateComprare = "UPDATE Comprare SET quantita = '"+(quantitaAppoggio + Integer.parseInt(quantita))+"' WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
+                    String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
                     st1.executeUpdate(queryUpdateComprare);
+                    st1.executeUpdate(queryUpdateProdotti);
                 }else{
                     st1.executeUpdate(queryAggiungiProdottoCarrello);
                 }
-                
                 
                 aggiuntaCarrello = "false";
                 response.sendRedirect("buy.jsp"); 
             }
 
             
-
         }
         catch(Exception e){
             out.println(e);

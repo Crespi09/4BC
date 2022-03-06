@@ -29,7 +29,23 @@
             <input type="button" value="Prenotazioni"/> <br> 
         </a>
         <br>
-        <a href = "index.html"> 
+
+
+                <%
+             out.println("<form action = 'index.html' method='POST'>");  
+                out.println("<input type='hidden' id='controlloLogOut' name='controlloLogOut' value = 'y'>");
+                out.println("<td> <input type= 'submit' class = 'btn2' value= 'Log-Out'></td>");
+            out.println("</form>");
+
+            String controlloLogOut = (String) request.getParameter("controlloLogOut");
+            if(controlloLogOut != null && (controlloLogOut).equals("y")){
+                usr = null;
+                id = null;
+            }
+
+        %>    
+
+        <br><a href = "index.html"> 
             <input type="button" value="Home"/> <br> 
         </a>
 

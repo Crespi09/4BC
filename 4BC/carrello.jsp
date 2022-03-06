@@ -78,7 +78,21 @@
                 out.println("</tr>");
             }
             out.println("</table>");
-            out.println("<br><a href = 'carrello.jsp'><button class = 'btn2'>Effettua Pagamento</button></a>");
+            
+            out.println("<form action = 'carrello.jsp' method='POST'>");  
+                out.println("<input type='hidden' id='pagamento' name='pagamento' value = 'y'>");
+                out.println("<td> <input type= 'submit' class = 'btn2' value= 'Effettua Pagamento'></td>");
+            out.println("</form>");
+            
+            //TODO una volta effettuato il pagamento andare ad eliminare i prodotti comprari
+            String alertS = (String) request.getParameter("pagamento");
+            if ( alertS != null && (alertS).equals("y")) { %>
+            <script> alert("Pagamento Effettuato");</script>
+            <% 
+            alertS = null;} %> 
+            
+        <%
+
         }
         catch(Exception e){
             out.println(e);
