@@ -1,0 +1,158 @@
+1)Home
+	endpoint: /index POST
+	
+	input: 	select: cliente/proprietario
+	
+	output: login.jsp se cliccato il button Sign-In.
+		registrazione_C / registrazione_O se cliccato il button Sign-Up 
+
+
+1) Registrazione utente
+	endpoint: /registrazione_C POST
+	
+	input: 	nome: stringa
+		cognome: stringa
+		telefono: stringa
+		username: stringa
+		mail: stringa
+		password: stringa
+	
+	output: redirect pagina home
+
+2) Registrazione Proprietario
+	endpoint: /registrazione_O POST
+	
+	input: 	nomeLocale: stringa
+		via: stringa
+		numeroCivico: stringa
+		città: stringa
+		telefono: stringa
+		username: stringa
+		email: stringa
+		password: stringa
+
+	output: redirect pagina login
+
+3)Login uguale, sia per utente che per proprietario, ma redirecta a pagine jsp differenti a seconda della scelta fatta all'interno del select presente nella pagina home
+	
+	endpoint : /login POST
+	
+	input:	username: stringa
+		password: stringa
+
+	output: redirect pagina /loginCliente o /loginOwner
+		sessione{
+			username:stringa
+			id:stringa
+		}
+
+4)Lista servizi che un utente può svolgere
+	endpoint: /loginCliente
+	
+	output: elenco servizi per utente, con appositi redirect
+		sessione{
+			username:stringa
+			id:stringa
+		}
+
+5)Prenotazione dei parrucchieri disponibili (utente)
+	endpoint: /booking POST - GET
+	input: 	idproprietario / controlloOrario
+		select: giornoSettimana
+		select: orario		
+
+	output: prenotazione avvenuta
+	sessione{
+			username:stringa
+		}
+
+6)Acquisto prodotti (utente)
+	endpoint: /buy POST
+	input: quantità prodotti attraverso un input type = "number" / bottone "aggiungi al carrello"
+	
+output: acquisto avvenuto
+	sessione{
+			username:stringa
+		}
+
+
+
+7)Lista servizi che un proprietario può svolgere
+	endpoint: /loginOwner
+	
+	output: elenco servizi per proprietario con appositi redirect
+	sessione{
+			username:stringa
+			id:stringa
+		}
+
+8)Vendità prodotti (proprietario)
+	endpoint: /sell POST - GET
+	input:	nome: stringa
+		descrizione: stringa
+		quantità: int
+		prezzo: double
+
+		controlloModifica		
+
+	output:
+		_aggiunta prodotti all'interno di una tabella
+		_prodotti venduti all'interno di una tabella
+		
+	sessione{
+			username:stringa
+		}
+
+
+9)Modifica riga tabella
+	endpoint: /modifica. POST
+	
+	input:	nome: stringa
+		descrizione: stringa
+		quantità: int
+		prezzo: double
+	output: redirect pagina /sell.jsp	
+	sessione{
+			username:stringa
+		}
+
+
+10)Eliminazione riga tabella
+	endpoint: /elimina POST
+	
+	input:	idGiorno: stringa
+		idProdotto: stringa
+
+	output: redirect pagina /sell.jsp o /orariOwner.jsp a seconda del paramentro che viene mandato attraverso il post
+	sessione{
+			username:stringa
+		}
+
+
+
+11) Accettazione prenotazioni
+	endpoint: /accept POST
+	
+	input: button accettazione
+	
+	output: tabella con i clienti accettati e a che ora
+	sessione{
+			username:stringa
+		}
+
+12) Impostazione orario
+	endpoint /orariOwner POST - GET
+
+	input: 	select: giorni settimana
+		orarioMattina = stringa
+		pausa = stringa
+		orarioPomeriggio = stringa
+
+		controlloModifica
+	
+	output: tabella con gli orari inseriti
+	
+	sessione{
+			username:stringa
+			id:stringa
+		}
