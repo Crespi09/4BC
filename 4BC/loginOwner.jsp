@@ -39,8 +39,7 @@
 
             String controlloLogOut = (String) request.getParameter("controlloLogOut");
             if(controlloLogOut != null && (controlloLogOut).equals("y")){
-                usr = null;
-                id = null;
+                session.invalidate();
             }
 
         %>    

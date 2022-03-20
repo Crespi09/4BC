@@ -101,7 +101,6 @@
                 ResultSet r2 = st.executeQuery(queryOrari2);
 
                 
-
                 out.println("<table>");
 
                     out.println("<tr>");

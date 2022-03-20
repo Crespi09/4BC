@@ -56,10 +56,10 @@
             
             Statement st = connection.createStatement();
 
-            String query2 = "SELECT * FROM Clienti WHERE email = '"+mail+"';";           
+            String queryVerifica = "SELECT * FROM Clienti WHERE email = '"+mail+"';";           
             String query = "INSERT INTO Clienti (nome,cognome,telefono, username, email, password ) VALUES ('"+nome+"', '"+cognome+"', '"+telefono+"', '"+username+"' , '"+mail+"' , '"+password+"')";
 
-            ResultSet result = st.executeQuery(query2);
+            ResultSet result = st.executeQuery(queryVerifica);
 
 
            if((username != null) || (password != null) || (mail != null)){

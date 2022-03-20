@@ -121,7 +121,11 @@
                     String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
                     st1.executeUpdate(queryUpdateComprare);
                     st1.executeUpdate(queryUpdateProdotti);
-                }else{
+                }else if (r2.next()){
+                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
+                    String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
+
+                    st1.executeUpdate(queryUpdateProdotti);
                     st1.executeUpdate(queryAggiungiProdottoCarrello);
                 }
                 

@@ -63,10 +63,10 @@
             
             Statement st = connection.createStatement();
 
-            String query2 = "SELECT * FROM Proprietari WHERE email = '"+mail+"';";           
+            String queryVerifica = "SELECT * FROM Proprietari WHERE email = '"+mail+"';";           
             String query = "INSERT INTO Proprietari (nomeLocale,via,nCivico,citta,telefono,username,email,password) VALUES ('"+nomeLocale+"', '"+via+"', '"+nCivico+"' , '"+citta+"', '"+telefono+"' , '"+username+"' , '"+mail+"' , '"+password+"')";
 
-            ResultSet result = st.executeQuery(query2);
+            ResultSet result = st.executeQuery(queryVerifica);
 
             if((username != null) || (password != null) || (mail != null)){
                 if(result.next()){

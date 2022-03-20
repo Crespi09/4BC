@@ -5,6 +5,18 @@
 <html>
     <head>
         <title>Sign-in</title>
+
+        <script>
+            function mostraPsw(){
+                var x = document.getElementById("password");
+                if (x.type === "password") {
+                    x.type = "text";
+                } else {
+                    x.type = "password";
+                }
+            }
+        </script>
+
     </head>
     <body>
         <h1>Sign-in</h1>
@@ -35,6 +47,8 @@
                 out.println("<input type='hidden' id='tipo' name='tipo' value = '"+tipo+"'>");
                 out.println("<input type='submit' id='btn' name='btn' value='Accedi'>");
             out.println("</form>");
+
+            out.println("<input type='checkbox' onclick='mostraPsw()'>Show Password<br><br>");
 
             out.println("<a href = 'index.html'>");
                 out.println("<input type='button' value='Indietro'/> <br> ");
