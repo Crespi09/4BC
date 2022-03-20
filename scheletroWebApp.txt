@@ -76,6 +76,10 @@ output: acquisto avvenuto
 		}
 
 
+7)Carrello (utente)
+	endponit: /carrello
+	input: nessuno
+	output:	tabella con prodotti acquistati
 
 7)Lista servizi che un proprietario può svolgere
 	endpoint: /loginOwner
