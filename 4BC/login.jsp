@@ -27,8 +27,9 @@
         
         String username=null;
         String password=null;
-        String tipo = null;
         String id = null;
+        String tipo = null;
+
         Connection connection=null;
 
         try{
@@ -39,12 +40,10 @@
         }
         try{
 
-            tipo = request.getParameter("tipo");
-
             out.println("<form action='login.jsp' method='POST'>");
                 out.println("<input type='text' id='username' name='username' placeholder='username'>");
                 out.println("<input type='password' id='password' name='password'placeholder='password'>");
-                out.println("<input type='hidden' id='tipo' name='tipo' value = '"+tipo+"'>");
+                
                 out.println("<input type='submit' id='btn' name='btn' value='Accedi'>");
             out.println("</form>");
 
@@ -54,37 +53,50 @@
                 out.println("<input type='button' value='Indietro'/> <br> ");
             out.println("</a>");
 
-
-
             username = request.getParameter("username");
             password = request.getParameter("password");
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
             
-            String queryControlloC = "SELECT username FROM Clienti WHERE username = '"+username+"'AND password = '"+password+"';"; 
-            String queryControlloP = "SELECT username FROM Proprietari WHERE username = '"+username+"'AND password = '"+password+"';";
+            String queryControllo = "SELECT usr FROM Utente WHERE usr = '"+username+"'AND psw = '"+password+"';"; 
             
-            String querySelectC = "SELECT * FROM Clienti WHERE username = '"+username+"'AND password = '"+password+"';";
-            String querySelectP = "SELECT * FROM Proprietari WHERE username = '"+username+"'AND password = '"+password+"';";
+            String querySelect = "SELECT * FROM Utente WHERE usr = '"+username+"'AND psw = '"+password+"';";
+            String querySelect2 = "SELECT * FROM Utente WHERE usr = '"+username+"'AND psw = '"+password+"';";
 
-            System.out.println("tipo: "+tipo);  //debug
             System.out.println("username: "+username);  //debug
             System.out.println("password: "+ password);  //debug
 
             HttpSession s = request.getSession();
             
             Statement st = connection.createStatement();
-            ResultSet r1 = st.executeQuery(queryControlloC);
-            ResultSet r2 = st.executeQuery(queryControlloP);
+            ResultSet r1 = st.executeQuery(queryControllo);
             
-            ResultSet r3 = st.executeQuery(querySelectC);
-            ResultSet r4 = st.executeQuery(querySelectP);
-            
+            ResultSet r3 = st.executeQuery(querySelect);
+            ResultSet r6 = st.executeQuery(querySelect2);
 
+            r6.next();
+            id = r6.getString("ID");
+
+            String queryControlloC = "SELECT ID FROM Utente INNER JOIN Cliente ON Utente.ID = Cliente.IDUtente WHERE ID = '"+Integer.parseInt(id)+"';";
+            String queryControlloP = "SELECT ID FROM Utente INNER JOIN Proprietario ON Utente.ID = Proprietario.IDUtente WHERE ID = '"+Integer.parseInt(id)+"';";
+
+            ResultSet r4 = st.executeQuery(queryControlloC);
+            ResultSet r5 = st.executeQuery(queryControlloP);
+
+            if(r4.next()){
+                tipo = "cliente";
+            }else if(r5.next()){
+                tipo = "prop";
+            }else{
+                tipo = null;
+            }
+
+            System.out.println("TIPO:" + tipo);
+            
             if(tipo.equals("cliente")){
                 if(r1.next()){    
                     s.setAttribute("username", username);
                     r3.next();
-                    id = r3.getString(5);
+                    id = r3.getString("ID");
                     s.setAttribute("id", id);
                     response.sendRedirect("loginCliente.jsp"); 
                 }else{
@@ -93,10 +105,10 @@
                     }              
                 }
             }else if(tipo.equals("prop")){
-                if(r2.next()){
+                if(r1.next()){
                     s.setAttribute("username", username);
-                    r4.next();
-                    id = r4.getString(8);
+                    r3.next();
+                    id = r3.getString("ID");
                     s.setAttribute("id", id); 
                     response.sendRedirect("loginOwner.jsp");
                 }else{
