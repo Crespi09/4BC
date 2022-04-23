@@ -59,8 +59,8 @@
             System.out.println("IDCLIENTE: " + idCliente); //debug
             System.out.println("IDPRODOTTO: " + idProd); //debug
 
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
-            String querySelezionaProdotti = "SELECT * FROM Prodotti WHERE (Prodotti.quantita <> NULL) OR (Prodotti.quantita <> 0)"; 
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
+            String querySelezionaProdotti = "SELECT * FROM Prodotto WHERE (Prodotto.quantita <> NULL) OR (Prodotto.quantita <> 0)"; 
             
 
             Statement st = connection.createStatement();
@@ -72,7 +72,7 @@
                 out.println("<tr>");
                     out.println("<th>Nome</th>");
                     out.println("<th>Descrizione</th>");
-                    out.println("<th>Quantita'</th>");
+                    out.println("<th>Quantita Disponibile'</th>");
                     out.println("<th>Prezzo</th>");
                     out.println("<th>Quantita'</th>");
                 out.println("</tr>");
@@ -80,16 +80,16 @@
                 while(r.next()){   
                     idProd = r.getString("id"); 
                    
-                    String querySelezioneQuantita = "SELECT quantita FROM Prodotti WHERE id = '"+idProd+"';";
+                    String querySelezioneQuantita = "SELECT quantita FROM Prodotto WHERE ID = '"+idProd+"';";
                     ResultSet r3 = st.executeQuery(querySelezioneQuantita);
 
                     while(r3.next()){
                         int quantitaMax = Integer.parseInt(r3.getString("quantita"));
                             out.println("<tr>");
-                                out.println("<td>"+r.getString(2)+ "</td>");
-                                out.println("<td>"+r.getString(4)+ "</td>");
-                                out.println("<td>"+r.getString(6)+ "</td>");
-                                out.println("<td>"+r.getString(7)+ " €</td>");
+                                out.println("<td>"+r.getString("nomeProd")+ "</td>");
+                                out.println("<td>"+r.getString("descrizione")+ "</td>");
+                                out.println("<td>"+r.getString("quantita")+ "</td>");
+                                out.println("<td>"+r.getString("prezzo")+ " €</td>");
 
                                 out.println("<form action='buy.jsp' method='POST'>");
                                     aggiuntaCarrello = "true";
@@ -113,19 +113,20 @@
                 Statement st1 = connection.createStatement();
                 ResultSet r1 = st1.executeQuery(queryVerifica);
                 ResultSet r2 = st1.executeQuery(querySelectQuantitaProdotti);
-
-                if(r1.next() && r2.next()){
+                
+                
+                if(r1.next()){
                     int quantitaAppoggio = Integer.parseInt(r1.getString("quantita"));
-                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
+                    //int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
                     String queryUpdateComprare = "UPDATE Comprare SET quantita = '"+(quantitaAppoggio + Integer.parseInt(quantita))+"' WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                    String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
+                    //String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
                     st1.executeUpdate(queryUpdateComprare);
-                    st1.executeUpdate(queryUpdateProdotti);
+                    //st1.executeUpdate(queryUpdateProdotti);
                 }else if (r2.next()){
-                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
-                    String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
+                    //int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
+                    //String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
 
-                    st1.executeUpdate(queryUpdateProdotti);
+                    //st1.executeUpdate(queryUpdateProdotti);
                     st1.executeUpdate(queryAggiungiProdottoCarrello);
                 }
                 

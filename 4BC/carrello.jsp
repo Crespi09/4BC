@@ -49,9 +49,9 @@
             
             
 
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
         
-            String queryProdottiAcquisiti = "SELECT Prodotti.nome, Comprare.quantita FROM Prodotti INNER JOIN Comprare ON Prodotti.id = Comprare.idProdotto WHERE Comprare.idCliente = '"+idCliente+"';";
+            String queryProdottiAcquisiti = "SELECT Prodotto.nomeProd, Comprare.quantita FROM Prodotto INNER JOIN Comprare ON Prodotto.ID = Comprare.idProdotto WHERE Comprare.idCliente = '"+idCliente+"';";
             String querySelectComprare = "SELECT * FROM Comprare WHERE idCliente = '"+idCliente+"';";
             
             Statement st= connection.createStatement();
@@ -68,7 +68,7 @@
             while(r1.next() && r2.next()){
                 idProd = r2.getString("Comprare.idProdotto");
                 out.println("<tr>");
-                    out.println("<td>"+r1.getString("Prodotti.nome")+ "</td>");
+                    out.println("<td>"+r1.getString("Prodotto.nomeProd")+ "</td>");
                     out.println("<td>"+r1.getString("Comprare.quantita")+ "</td>");
                     
                     out.println("<form action='elimina.jsp' method='POST'>");
@@ -87,9 +87,46 @@
             //TODO una volta effettuato il pagamento andare ad eliminare i prodotti comprari
             String alertS = (String) request.getParameter("pagamento");
             if ( alertS != null && (alertS).equals("y")) { %>
-            <script> alert("Pagamento Effettuato");</script>
-            <% 
-            alertS = null;} %> 
+                <script> alert("Pagamento Effettuato");</script>
+                <% 
+                    alertS = null;
+
+                    String querySelectID = "SELECT idProdotto FROM Comprare";
+
+                    ResultSet r3 = st.executeQuery(querySelectID);
+
+                    while(r3.next()){
+
+                        idProd = r3.getString("idProdotto");
+
+                        String querySelezioneQuantitaProdotto = "SELECT quantita FROM Prodotto WHERE ID = '"+idProd+"' ";
+                        String querySelezioneQuantitaComprare = "SELECT quantita FROM Comprare WHERE idProdotto = '"+idProd+"' ";
+
+                        ResultSet r4 = st.executeQuery(querySelezioneQuantitaProdotto);
+                        ResultSet r5 = st.executeQuery(querySelezioneQuantitaComprare);
+
+                        r4.next();
+                        r5.next();
+
+                        int qtProdotto = Integer.parseInt(r4.getString("quantita"));
+                        int qtComprare = Integer.parseInt(r5.getString("quantita"));
+
+                        
+                        String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
+                        String queryDeleteRowComprare = "DELETE FROM Comprare WHERE idProdotto = '"+idProd+"';";
+                        String queryUpdateComprati = "";
+                        
+                        st.executeUpdate(queryUpdateProdotti);
+                        st.executeUpdate(queryDeleteRowComprare);
+                        
+                    }
+
+
+                
+                
+                
+                
+                } %> 
             
         <%
 

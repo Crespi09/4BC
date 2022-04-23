@@ -18,14 +18,6 @@
             <input type="submit" value="Seleziona"/> 
         </form>
 
-        <% 
-            
-        %>
-
-        <a href = "index.html"> 
-            <input type="button" value="Indietro"/> <br> 
-        </a>
-
         <%
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         
@@ -144,5 +136,10 @@
             }
         }
         %>
+        
+        <a href = "index.html"> 
+            <input type="button" value="Indietro"/> <br> 
+        </a>
+
     </body>
 </html>

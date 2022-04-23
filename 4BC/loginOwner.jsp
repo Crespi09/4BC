@@ -32,7 +32,7 @@
 
 
                 <%
-             out.println("<form action = 'index.html' method='POST'>");  
+             out.println("<form action = 'loginOwner.jsp' method='POST'>");  
                 out.println("<input type='hidden' id='controlloLogOut' name='controlloLogOut' value = 'y'>");
                 out.println("<td> <input type= 'submit' class = 'btn2' value= 'Log-Out'></td>");
             out.println("</form>");
@@ -40,6 +40,7 @@
             String controlloLogOut = (String) request.getParameter("controlloLogOut");
             if(controlloLogOut != null && (controlloLogOut).equals("y")){
                 session.invalidate();
+                response.sendRedirect("index.html");
             }
 
         %>    
