@@ -1,5 +1,8 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.sql.*" %>
+<%@ page import = "java.time.format.DateTimeFormatter" %>
+<%@ page import = "java.time.LocalDateTime" %>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -32,6 +35,9 @@
             response.sendRedirect("index.html");
         }
         
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  
+        LocalDateTime now = LocalDateTime.now();  
+
         out.println("<h1> Prodotti nel Carrello di "+usr+": </h1><br>");
 
         String idProd = null;
@@ -47,8 +53,6 @@
         }
         try{
             
-            
-
             connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
         
             String queryProdottiAcquisiti = "SELECT Prodotto.nomeProd, Comprare.quantita FROM Prodotto INNER JOIN Comprare ON Prodotto.ID = Comprare.idProdotto WHERE Comprare.idCliente = '"+idCliente+"';";
@@ -114,18 +118,14 @@
                         
                         String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
                         String queryDeleteRowComprare = "DELETE FROM Comprare WHERE idProdotto = '"+idProd+"';";
-                        String queryUpdateComprati = "";
+                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+quantita+"' ,'"+now+"' )";
                         
                         st.executeUpdate(queryUpdateProdotti);
                         st.executeUpdate(queryDeleteRowComprare);
+                        st.executeUpdate(queryUpdateComprati);
                         
                     }
 
-
-                
-                
-                
-                
                 } %> 
             
         <%
