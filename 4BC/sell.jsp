@@ -74,12 +74,12 @@
             System.out.println(controlloModifica);
 
 
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
             
-            String query = "SELECT * FROM Prodotti WHERE idProp = '"+idProprietario+"';";
-            String queryControllo = "SELECT nome,proprietario FROM Prodotti WHERE nome = '"+nome+"' AND idProp = '"+idProprietario+"';";
-            String queryInserimento = "INSERT INTO Prodotti(nome,descrizione,quantita,prezzo,proprietario,idProp) VALUES ('"+nome+"' , '"+descrizione+"' , '"+ quantita+"' , '"+prezzo+"' , '"+usr+"' , '"+idProprietario+"')";
-            String queryProdottiVenduti = "SELECT Clienti.nome, Clienti.cognome, Prodotti.nome, Comprare.quantita FROM Prodotti,Comprare,Clienti WHERE (Comprare.idProdotto = Prodotti.id) AND (Comprare.idCliente = Clienti.ID) AND (Prodotti.idProp) = '"+idProprietario+"';";
+            String query = "SELECT * FROM Prodotto WHERE idProp = '"+idProprietario+"';";
+            String queryControllo = "SELECT nomeProd,idProd FROM Prodotto WHERE nomeProd = '"+nome+"' AND idProp = '"+idProprietario+"';";
+            String queryInserimento = "INSERT INTO Prodotto(nomeProd,descrizione,quantita,prezzo,idProp) VALUES ('"+nome+"' , '"+descrizione+"' , '"+ quantita+"' , '"+prezzo+"', '"+idProprietario+"')";
+            String queryProdottiVenduti = "SELECT Cliente.nome, Cliente.cognome, Prodotto.nome, Comprare.quantita FROM Prodotto,Comprare,Cliente WHERE (Comprare.idProdotto = Prodotto.ID) AND (Comprare.idCliente = Cliente.ID) AND (Prodotto.idProp) = '"+idProprietario+"';";
 
             Statement st = connection.createStatement();
             ResultSet r1 = st.executeQuery(queryControllo);
@@ -143,11 +143,11 @@
                     out.println("</tr>");
 
                     while(r4.next()){
-                        String nomeCliente = r4.getString("Clienti.nome") +" "+r4.getString("Clienti.cognome");
+                        String nomeCliente = r4.getString("Cliente.nome") +" "+r4.getString("Cliente.cognome");
 
                         out.println("<tr>");
                             out.println("<td>"+nomeCliente+ "</td>");
-                            out.println("<td>"+r4.getString("Prodotti.nome")+ "</td>");
+                            out.println("<td>"+r4.getString("Prodotto.nomeProd")+ "</td>");
                             out.println("<td>"+r4.getString("Comprare.quantita")+ "</td>");
                         out.println("</tr>");
                     }
@@ -170,10 +170,10 @@
                     System.out.println("id:"+idProd);
                         out.println("<tr>");
                             out.println("<form action='modifica.jsp' method = 'post'>");
-                                out.println("<td><input type = 'text' id = 'nome' name = 'nome' placeholder = '"+r3.getString(2)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'descrizione' name = 'descrizione' placeholder = '"+r3.getString(4)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'quantita' name = 'quantita' placeholder = '"+r3.getString(6)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'prezzo' name = 'prezzo' placeholder = '"+r3.getString(7)+"'></td>");
+                                out.println("<td><input type = 'text' id = 'nome' name = 'nome' value = '"+r3.getString(2)+"'></td>");
+                                out.println("<td><input type = 'text' id = 'descrizione' name = 'descrizione' value = '"+r3.getString(4)+"'></td>");
+                                out.println("<td><input type = 'text' id = 'quantita' name = 'quantita' value = '"+r3.getString(6)+"'></td>");
+                                out.println("<td><input type = 'text' id = 'prezzo' name = 'prezzo' value = '"+r3.getString(7)+"'></td>");
                                 out.println("<input type='hidden' id='idProd' name='idProd' value = '"+idProd+"'>");
                                     
                                 out.println("<td> <input type= 'submit' class = 'btn1' value= 'Salva'></td>");
@@ -203,7 +203,7 @@
 
         <br> <br>
         <a href = "loginOwner.jsp"> 
-            <input type="button" value="Home Proprietario"/> <br> 
+            <input type="button" value="Home"/> <br> 
         </a>
 
     </body>

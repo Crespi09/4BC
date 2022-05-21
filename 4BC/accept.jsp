@@ -9,7 +9,7 @@
         <p>Visualizzazione delle richieste del cliente e possibilita' di accettarle e/o rifiutarle</p>
 
         <a href = "loginOwner.jsp"> 
-            <input type="button" value="Indietro"/> <br> 
+            <input type="button" value="Home"/> <br> 
         </a>
 
         <%

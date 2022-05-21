@@ -20,6 +20,7 @@
         String idProdotto = null;
         String idGiorno = null;
         String idProdCarrello = null;
+        String qtaProd = null;
 
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         Connection connection=null;
@@ -35,12 +36,14 @@
             idGiorno = request.getParameter("idGiorno");  
             idProdotto = request.getParameter("idProd");
             idProdCarrello = request.getParameter("idProdCarrello");
-            
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            qtaProd = request.getParameter("qtaProd");
+
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
         
-            String queryEliminaProdotto = "DELETE FROM Prodotti WHERE id = '"+idProdotto+"';";
+            String queryEliminaProdotto = "DELETE FROM Prodotto WHERE id = '"+idProdotto+"';";
             String queryEliminaOrario = "DELETE FROM Orari WHERE codice = '"+idGiorno+"';";
             String queryEliminaProdottoCarrello = "DELETE FROM Comprare WHERE idProdotto = '"+idProdCarrello+"';";
+            String queryModifica = "UPDATE Prodotto SET quantita = '"+Integer.parseInt(qtaProd)+"' WHERE ID = '"idProdCarrello"';";
             Statement st= connection.createStatement();
             
             if(idGiorno != null){
@@ -55,7 +58,9 @@
             }
             if(idProdCarrello != null){
                 st.executeUpdate(queryEliminaProdottoCarrello);
+                st.executeUpdate(queryUpdateQTAProdotti);
                 idProdCarrello = null;
+                queryUpdateQTAProdotti = null;
                 response.sendRedirect("carrello.jsp");
             }
         

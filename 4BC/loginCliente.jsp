@@ -42,9 +42,5 @@
             }
         %>  
 
-        <br><a href = "index.html"> 
-            <input type="button" value="Home"/> <br> 
-        </a>  
-
     </body>
 </html>

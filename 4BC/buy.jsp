@@ -108,25 +108,25 @@
             }else{
                 String queryAggiungiProdottoCarrello = "INSERT INTO Comprare (idCliente, idProdotto, quantita) VALUES ('"+idCliente+"', '"+idProd+"', '"+quantita+"');";
                 String queryVerifica = "SELECT * FROM Comprare WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                String querySelectQuantitaProdotti = "SELECT quantita FROM Prodotti WHERE id = '"+idProd+"';";
+                String querySelectQuantitaProdotti = "SELECT quantita FROM Prodotto WHERE id = '"+idProd+"';";
 
                 Statement st1 = connection.createStatement();
                 ResultSet r1 = st1.executeQuery(queryVerifica);
                 ResultSet r2 = st1.executeQuery(querySelectQuantitaProdotti);
                 
                 
-                if(r1.next()){
+                if(r1.next() && r2.next()){
                     int quantitaAppoggio = Integer.parseInt(r1.getString("quantita"));
-                    //int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
+                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita")); //
                     String queryUpdateComprare = "UPDATE Comprare SET quantita = '"+(quantitaAppoggio + Integer.parseInt(quantita))+"' WHERE idCliente = '"+idCliente+"' AND  idProdotto = '"+idProd+"';";
-                    //String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
+                    String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';"; //
                     st1.executeUpdate(queryUpdateComprare);
-                    //st1.executeUpdate(queryUpdateProdotti);
+                    st1.executeUpdate(queryUpdateProdotti); //
                 }else if (r2.next()){
-                    //int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita"));
-                    //String queryUpdateProdotti = "UPDATE Prodotti SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";
+                    int quantitaAppoggioProdotti = Integer.parseInt(r2.getString("quantita")); //
+                    String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(quantitaAppoggioProdotti - Integer.parseInt(quantita))+"' WHERE id = '"+idProd+"';";  //
 
-                    //st1.executeUpdate(queryUpdateProdotti);
+                    st1.executeUpdate(queryUpdateProdotti); //
                     st1.executeUpdate(queryAggiungiProdottoCarrello);
                 }
                 
@@ -154,7 +154,7 @@
 
         <br>
         <a href = "loginCliente.jsp"> 
-            <input type="button" value="Indietro"/> <br> 
+            <input type="button" value="Home"/> <br> 
         </a>
     </body>
 

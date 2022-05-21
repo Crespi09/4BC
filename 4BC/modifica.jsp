@@ -24,8 +24,6 @@
     </head>
     
     <body>
-        <h1>Modifica</h1>
-
         <%
         String usr = (String) request.getSession().getAttribute("username");
         if(usr == null){
@@ -56,10 +54,10 @@
             prezzo = request.getParameter("prezzo");
 
  
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
             
-            String queryModifica = "UPDATE Prodotti SET nome = '"+nome+"' , descrizione = '"+descrizione+"' , quantita = '"+quantita+"' , prezzo = '"+prezzo+"' WHERE id = '"+Integer.parseInt(id)+"';";
-            String query = "SELECT * FROM Prodotti WHERE proprietario = '"+usr+"';";
+            String queryModifica = "UPDATE Prodotto SET nome = '"+nome+"' , descrizione = '"+descrizione+"' , quantita = '"+quantita+"' , prezzo = '"+prezzo+"' WHERE id = '"+Integer.parseInt(id)+"';";
+            String query = "SELECT * FROM Prodotto WHERE proprietario = '"+usr+"';";
 
             Statement st = connection.createStatement();
             ResultSet r4 = st.executeQuery(query);

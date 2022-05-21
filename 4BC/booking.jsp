@@ -206,7 +206,7 @@
 
         <br>
         <a href = "loginCliente.jsp"> 
-            <br><input type="button" value="Home Cliente"/> <br> 
+            <br><input type="button" value="Home"/> <br> 
         </a>
 
     </body>

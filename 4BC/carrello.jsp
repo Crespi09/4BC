@@ -41,6 +41,7 @@
         out.println("<h1> Prodotti nel Carrello di "+usr+": </h1><br>");
 
         String idProd = null;
+        String qtaProd = null;
 
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         Connection connection=null;
@@ -71,12 +72,17 @@
 
             while(r1.next() && r2.next()){
                 idProd = r2.getString("Comprare.idProdotto");
+                System.out.println("aaaaaaaaaaaaa:" +idProd);
+                qtaProd = r2.getString("Comprare.quantita");
+                
                 out.println("<tr>");
                     out.println("<td>"+r1.getString("Prodotto.nomeProd")+ "</td>");
                     out.println("<td>"+r1.getString("Comprare.quantita")+ "</td>");
                     
                     out.println("<form action='elimina.jsp' method='POST'>");
                                 out.println("<input type='hidden' id='idProdCarrello' name='idProdCarrello' value = '"+idProd+"'>");
+                                
+                                out.println("<input type= 'hidden' id= 'qtaProd' name = 'qtaProd' value = '"+qtaProd+"'>");
                                 out.println("<td> <input type= 'submit' class = 'btn1' value= 'Elimina'></td>");
                     out.println("</form>");
                 out.println("</tr>");
@@ -118,7 +124,7 @@
                         
                         String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
                         String queryDeleteRowComprare = "DELETE FROM Comprare WHERE idProdotto = '"+idProd+"';";
-                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+quantita+"' ,'"+now+"' )";
+                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+qtComprare+"' ,'"+now+"' )";
                         
                         st.executeUpdate(queryUpdateProdotti);
                         st.executeUpdate(queryDeleteRowComprare);
@@ -126,7 +132,7 @@
                         
                     }
 
-                } %> 
+            }   %> 
             
         <%
 

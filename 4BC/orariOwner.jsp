@@ -70,7 +70,7 @@
         }
         try{
             
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
 
             giorno = request.getParameter("giorno");
             orarioM = request.getParameter("orarioM");
@@ -81,9 +81,9 @@
                 controlloModifica = request.getParameter("controlloModifica");
             }
             
-            String querySelect = "SELECT * FROM Orari WHERE codiceProprietario = '"+id+"';";
-            String queryInserimentoOrari = "INSERT INTO Orari(giorno,orarioMattina,orarioPomeriggio,orarioPausa,codiceProprietario) VALUES ('"+giorno+"' , '"+orarioM+"' , '"+orarioP+"' , '"+pausa+"' , '"+id+"')";
-            String queryControlloGiorno = "SELECT giorno FROM Orari WHERE codiceProprietario = '"+id+"' AND giorno = '"+giorno+"';";
+            String querySelect = "SELECT * FROM Orari WHERE idProp = '"+id+"';";
+            String queryInserimentoOrari = "INSERT INTO Orari(giorno,orarioMattina,orarioPomeriggio,orarioPausa,idProp) VALUES ('"+giorno+"' , '"+orarioM+"' , '"+orarioP+"' , '"+pausa+"' , '"+id+"')";
+            String queryControlloGiorno = "SELECT giorno FROM Orari WHERE idProp = '"+id+"' AND giorno = '"+giorno+"';";
 
             Statement st = connection.createStatement();
             ResultSet r = st.executeQuery(querySelect);
@@ -142,10 +142,10 @@
                     String idGiorno = r.getString(1);
                     out.println("<tr>");
                         out.println("<form action='modifica.jsp' method = 'post'>");
-                            out.println("<td><input type = 'text' id = 'giorno' name = 'giorno' placeholder = '"+r.getString(2)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'orarioM' name = 'orarioM' placeholder = '"+r.getString(3)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'pausa' name = 'pausa' placeholder = '"+r.getString(5)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'orarioP' name = 'orarioP' placeholder = '"+r.getString(4)+"'></td>");
+                            out.println("<td><input type = 'text' id = 'giorno' name = 'giorno' value = '"+r.getString(2)+"'></td>");
+                            out.println("<td><input type = 'text' id = 'orarioM' name = 'orarioM' value = '"+r.getString(3)+"'></td>");
+                            out.println("<td><input type = 'text' id = 'pausa' name = 'pausa' value = '"+r.getString(5)+"'></td>");
+                            out.println("<td><input type = 'text' id = 'orarioP' name = 'orarioP' value = '"+r.getString(4)+"'></td>");
                             out.println("<input type='hidden' id='idGiorno' name='idGiorno' value = '"+idGiorno+"'>");
                             
                             out.println("<td> <input type= 'submit' class = 'btn1' value= 'Salva'></td>");
@@ -172,7 +172,7 @@
 
         <br> <br>
         <a href = "loginOwner.jsp"> 
-            <input type="button" value="Home Proprietario"/> <br> 
+            <input type="button" value="Home"/> <br> 
         </a>
 
     </body>
