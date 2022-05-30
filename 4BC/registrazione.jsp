@@ -21,6 +21,7 @@
         <%
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         
+        
 
         String tipo;
 
@@ -32,6 +33,10 @@
         String password;
         
         Connection connection=null;
+
+        connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
+                        
+        Statement st = connection.createStatement();
 
         try{
             Class.forName(DRIVER);
@@ -54,7 +59,7 @@
                             Telefono: <input type = 'text' id = 'telefono' name = 'telefono' placeholder = 'telefono' required/>
                             <br> <br>
                             Username: <input type= 'text' id= 'username' name= 'username' placeholder= 'username' required/>
-                            Mail: <input type = 'text' id = 'mail' name = 'mail' placeholder = 'mail' required/>
+                            Mail: <input type = 'mail' id = 'mail' name = 'mail' placeholder = 'mail' required/>
                             Password: <input type= 'password' id= 'password' name= 'password' placeholder= 'password' required/>
                             <input type='hidden'  name='tipo' value = 'cliente'>
 
@@ -71,10 +76,6 @@
 
                         System.out.println("NOME "+nome);
                         
-                        connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
-                        
-                        Statement st = connection.createStatement();
-
                         String queryVerifica = "SELECT * FROM Utente WHERE usr = '"+username+"';";   
                         String queryInserisciUtente = "INSERT INTO Utente (usr,psw) VALUES ('"+username+"', '"+password+"')";    
 
@@ -102,20 +103,60 @@
                         break;
 
                     case "prop": 
-                        out.println("<form action= 'registrazione.jsp' method='POST'>");
-                            out.println("Nome Locale: <input type = 'text' id = 'nomeLocale' name = 'nomeLocale' placeholder = 'Nome Locale' required>");
-                            out.println("Via: <input type= 'text' id= 'via' name= 'via' placeholder= 'via'>");
-                            out.println("Numero Civico: <input type= 'text' id= 'nCivico' name= 'nCivico' placeholder= 'Numero Civico' required>");
-                            out.println("Citta': <input type= 'text' id= 'citta' name= 'citta' placeholder= 'Citta'>");
-                            out.println("Telefono: <input type= 'text' id= 'telefono' name= 'telefono' placeholder= 'Telefono' required>");
-                            out.println("<br> <br>");
-                            out.println("Username: <input type= 'text' id= 'username' name= 'username' placeholder= 'username' required>");
-                            out.println("Email: <input type = 'text' id = 'mail' name = 'mail' placeholder = 'mail' required>");
-                            out.println("Password: <input type= 'password' id= 'password' name= 'password' placeholder= 'password' required>");
-                        
-                            out.println("<input type='submit' id='btn' name='btn' value='Sign-up'>");
-                        out.println("</form>");
 
+                    %>
+                        
+                        <form action= 'registrazione.jsp' method='POST'>
+                            Nome: <input type = 'text' id = 'nome' name = 'nome' placeholder = 'nome' required>
+                            Cognome: <input type = 'text' id = 'cognome' name = 'cognome' placeholder = 'cognome' required>
+                            Nome Locale: <input type = 'text' id = 'nomeLocale' name = 'nomeLocale' placeholder = 'Nome Locale' required>
+                            Via: <input type= 'text' id= 'via' name= 'via' placeholder= 'via'>
+                            Numero Civico: <input type= 'text' id= 'nCivico' name= 'nCivico' placeholder= 'Numero Civico' required>
+                            Citta': <input type= 'text' id= 'citta' name= 'citta' placeholder= 'Citta'>
+                            <br>Telefono: <input type= 'text' id= 'telefono' name= 'telefono' placeholder= 'Telefono' required>
+                            <br> <br>
+                            Username: <input type= 'text' id= 'username' name= 'username' placeholder= 'username' required>
+                            Email: <input type = 'mail' id = 'mail' name = 'mail' placeholder = 'mail' required>
+                            Password: <input type= 'password' id= 'password' name= 'password' placeholder= 'password' required>
+                            <input type='hidden'  name='tipo' value = 'prop'>
+                        
+                            <input type='submit' id='btn' name='btn' value='Sign-up'>
+                        </form>
+
+                    <%
+                        String nomeP = request.getParameter("nome");
+                        String cognomeP = request.getParameter("cognome");
+                        String nomeLocaleP = request.getParameter("nomeLocale");
+                        String viaP = request.getParameter("via");
+                        String nCivicoP = request.getParameter("nCivico");
+                        String cittaP = request.getParameter("citta");
+                        String telefonoP = request.getParameter("telefono");
+                        String usrP = request.getParameter("username");
+                        String mailP = request.getParameter("mail");
+                        String pswP = request.getParameter("password");
+
+                        String queryVerifica2 = "SELECT * FROM Utente WHERE usr = '"+usrP+"';";
+                        String queryInserisciUtente2 = "INSERT INTO Utente (usr,psw) VALUES ('"+usrP+"', '"+pswP+"')";    
+
+                        ResultSet r1 = st.executeQuery(queryVerifica2);
+
+
+                        if((usrP != null) || (pswP != null)){
+                            if(r1.next()){
+                                out.println("<p>Questo account è già esistente</p>");
+                            }else{
+                                st.executeUpdate(queryInserisciUtente2);
+
+                                String queryID = "SELECT ID FROM Utente WHERE usr = '"+usrP+"'";
+                                ResultSet r = st.executeQuery(queryID);
+                                r.next();
+                                String IDUtente = r.getString("ID");
+                                System.out.println("ID: "+IDUtente);
+                                String queryInserisciProp = "INSERT INTO Proprietario (IDUtente, nome, cognome, nomeLocale, via, nCivico, telefono, email) VALUES ('"+IDUtente+"','"+nomeP+"', '"+cognomeP+"', '"+nomeLocaleP+"', '"+viaP+"' , '"+nCivicoP+"', '"+telefonoP+"', '"+mailP+"')";
+                                st.executeUpdate(queryInserisciProp);
+                                response.sendRedirect("index.html"); 
+                            }
+                        }
 
                         break;
                     

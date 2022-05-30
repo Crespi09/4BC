@@ -41,6 +41,7 @@
 
         String controlloOrario = "false";
         int idProp = 0;
+        String selezione = "";
 
         Connection connection=null;
 
@@ -56,9 +57,12 @@
                 controlloOrario = request.getParameter("controlloOrario");
             }
 
+            if(request.getParameter("selezione") != null){
+                controlloOrario = request.getParameter("selezione");
+            }
 
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "DatiUtenti.accdb");
-            String query = "SELECT * FROM Proprietari"; 
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
+            String query = "SELECT * FROM Proprietario"; 
             
             Statement st = connection.createStatement();
             ResultSet result = st.executeQuery(query);
@@ -76,25 +80,31 @@
                     out.println("</tr>");
                     
                     while(result.next()){
-                        String luogo = result.getString(5) + " " +result.getString(6) + "/" + result.getString(7);
-                        idProp = Integer.parseInt(result.getString(8));          
+                        String luogo = result.getString("via") + " " +result.getString("nCivico") + "/" + result.getString("citta");
+                        idProp = Integer.parseInt(result.getString("ID"));          
                         out.println("<tr>");
-                            out.println("<td>"+result.getString(4)+ "</td>");
+                            out.println("<td>"+result.getString("nomeLocale")+ "</td>");
                             out.println("<td>"+luogo+ "</td>");
-                            out.println("<td>"+result.getString(9)+ "</td>");
-                            out.println("<td>"+result.getString(3)+ "</td>");
+                            out.println("<td>"+result.getString("telefono")+ "</td>");
+                            out.println("<td>"+result.getString("email")+ "</td>");
                             
                             out.println("<td> <a href = 'booking.jsp?controlloOrario=true&idProprietario="+idProp+"'><button class = 'btn1'>Vedi Orario</button></a></td>");
                             out.println("</tr>");
                     }
                 out.println("</table>");
             }else{
+                    selezione = controlloOrario;
+                    
+
+                if(!selezione.equals("y")){
+
                 result.next();
                 idProp = Integer.parseInt(request.getParameter("idProprietario"));
 
-                String querySelectProp = "SELECT * FROM Proprietari WHERE ID = '"+idProp+"'";
-                String queryOrari = "SELECT orarioMattina,orarioPomeriggio FROM Orari WHERE codiceProprietario = '"+idProp+"';";
-                String queryOrari2 = "SELECT * FROM Orari WHERE codiceProprietario = '"+idProp+"';";
+                String querySelectProp = "SELECT * FROM Proprietario WHERE ID = '"+idProp+"'";
+
+                String queryOrari = "SELECT orarioMattina,orarioPomeriggio FROM Orari WHERE idProp = '"+idProp+"';";
+                String queryOrari2 = "SELECT * FROM Orari WHERE idProp = '"+idProp+"';";
 
                 ResultSet r = st.executeQuery(querySelectProp);  
                 ResultSet r1 = st.executeQuery(queryOrari); 
@@ -108,78 +118,40 @@
                         out.println("<th>Luogo</th>");
                         out.println("<th>Telefono</th>");
                         out.println("<th>Email</th>");
-                        out.println("<th>Orari Disponibili</th>");
-                        out.println("<th><button class = 'btn1'>Prenota</button></th>");
+                        out.println("<th>Giorni Disponibili</th>");
+                        
+                        
+                        //out.println("<td> <a href = 'booking.jsp?controlloOrario=true&selezione=y&idProprietario="+idProp+"'><button class = 'btn1'>Seleziona</button></a></td>");
                         
                     out.println("</tr>");
                     
                     while(r.next() && r1.next()){
-                        String luogo = r.getString(5) + " " +r.getString(6) + "/" + r.getString(7);        
+                        String luogo = r.getString("via") + " " +r.getString("nCivico") + "/" + r.getString("citta");        
                         
-                        String oMattino = r1.getString(1); 
-                        String oPomeriggio = r1.getString(2); 
-
-                        String[] orarioM = oMattino.split("-");
-                        double oraM1 = Double.parseDouble(orarioM[0]);
-                        double oraM2 = Double.parseDouble(orarioM[1]);
-
-                        //System.out.println("prima parte orario mattina: " + oraM1);  //debug
-                        //System.out.println("seconda parte orario mattina: " + oraM2); //debug
-
-                        String[] orarioP = oPomeriggio.split("-");
-                        double oraP1 = Double.parseDouble(orarioP[0]);
-                        double oraP2 = Double.parseDouble(orarioP[1]);
-                        
-                        int i = 0;
-                        int j = 0;
-
                         out.println("<tr>");
-                            out.println("<td>"+r.getString(4)+ "</td>");
+                            out.println("<td>"+r.getString("nomeLocale")+ "</td>");
                             out.println("<td>"+luogo+ "</td>");
-                            out.println("<td>"+r.getString(9)+ "</td>");
-                            out.println("<td>"+r.getString(3)+ "</td>");
+                            out.println("<td>"+r.getString("telefono")+ "</td>");
+                            out.println("<td>"+r.getString("email")+ "</td>");
                             
                             out.println("<td>");
-                                out.println("<table>");
-                                    out.println("<th>Giorno</th>");
-                                    out.println("<th>Ora</th>");
+                                out.println("<form action = 'booking.jsp' method = 'POST'>");
+                                    out.println("<select name = 'giorno' id='giorno'>");
+                                        out.println("<option value = 'lunedi'>Lunedi</option>");
+                                        out.println("<option value = 'martedi'>Martedi</option>");
+                                        out.println("<option value = 'mercoledi'>Mercoledi</option>");
+                                        out.println("<option value = 'giovedi'>Giovedi</option>");
+                                        out.println("<option value = 'venerdi'>Venerdi</option>");
+                                        out.println("<option value = 'sabato'>Sabato</option>");
+                                    out.println("</select>");
                                     
-                                    while(r2.next()){
-                                        out.println("<tr>");
-                                            out.println("<td>"+r2.getString("giorno")+ "</td>");
-                                            /*String queryProva = "SELECT orarioMattina, orarioPomeriggio FROM Orario WHERE codiceProprietario = '"+idProp+"' AND giorno = '"+r2.getString("giorno")+"';";
-                                            ResultSet r3 = st.executeQuery("queryProva");
-                                            r3.next();
+                                    out.println("<input type='hidden' id='controlloOrario' name='controlloOrario' value = 'true'>");
+                                    out.println("<input type='hidden' id='idProprietario' name='idProprietario' value = '"+idProp+"'>");
+                                    out.println("<input type='hidden' id='selezione' name='selezione' value = 'y'>");
 
-                                            String oMattino = r1.getString("orarioMattina"); 
-                                            String oPomeriggio = r1.getString("orarioPomeriggio"); 
-                                            
-                                            String[] orarioM = oMattino.split("-");
-                                            double oraM1 = Double.parseDouble(orarioM[0]);
-                                            double oraM2 = Double.parseDouble(orarioM[1]);
+                                    out.println("<input type= 'submit' value= 'Seleziona'>");
+                                out.println("</form>");
 
-                                            String[] orarioP = oPomeriggio.split("-");
-                                            double oraP1 = Double.parseDouble(orarioP[0]);
-                                            double oraP2 = Double.parseDouble(orarioP[1]);
-                                            */
-                                            out.println("<td>");
-                                                out.println("<select name = 'orario' id='orario'>");
-                                                    while(oraM1 < oraM2 ){    
-                                                    i++;
-                                                    j= i;
-                                                    out.println("<option value = 'ora"+i+"'>"+oraM1+"</option>");
-                                                    oraM1++;
-                                                    }
-                                                    while(oraP1 < oraP2){       
-                                                        j++;
-                                                        out.println("<option value = 'ora"+j+"'>"+oraP1+"</option>");
-                                                        oraP1++;
-                                                    }
-                                                out.println("</select>");
-                                            out.println("</td>");
-                                        out.println("</tr>");
-                                    }
-                                out.println("</table>");
                             out.println("</td>");
                             
                         out.println("</tr>");
@@ -187,6 +159,53 @@
                 out.println("</table>");
                 
                 out.println("<br><a href = 'booking.jsp?controlloOrario=false'><button class ='btn2'> Indietro </button></a>");
+                }else{
+                   String giorno = request.getParameter("giorno");
+                    //FARE UNA SELECT IN BASE AL GIORNO E DARE IN OUTPUT GLI ORARI POSSIBILI PER LA PRENOTAZIONE
+                    //SE IL GIORNO NON è PRESENTE SCRIVERLO
+                    //AGGIUNGERE TASTO TORNA INDIETRO
+/*
+                    String querySelezioneGiorno = "SELECT orarioMattina, orarioPomeriggio, orarioPausa FROM Orari WHERE giorno = '"+giorno+"' AND idProp = '1';";
+                    //String querySelezioneGiorno = "SELECT orarioMattina,orarioPomeriggio FROM Orari WHERE idProp = '"+idProp+"';";
+                    System.out.println("aaaaaaaa:" + querySelezioneGiorno);
+
+                    
+                    ResultSet r3 = st.executeQuery("querySelezioneGiorno");
+                    
+                    r3.next();
+
+                    String oMattino = r3.getString("orarioMattina"); 
+                    String oPomeriggio = r3.getString("orarioPomeriggio"); 
+
+                    String[] orarioM = oMattino.split("-");
+                    double oraM1 = Double.parseDouble(orarioM[0]);
+                    double oraM2 = Double.parseDouble(orarioM[1]);
+
+                    //System.out.println("prima parte orario mattina: " + oraM1);  //debug
+                    //System.out.println("seconda parte orario mattina: " + oraM2); //debug
+
+                    String[] orarioP = oPomeriggio.split("-");
+                    double oraP1 = Double.parseDouble(orarioP[0]);
+                    double oraP2 = Double.parseDouble(orarioP[1]);
+                    
+                    int i = 0;
+                    int j = 0;
+
+                    out.println("<select name = 'orario' id='orario'>");
+                    while(oraM1 < oraM2 ){    
+                        i++;
+                        j= i;
+                        out.println("<option value = 'ora"+i+"'>"+oraM1+"</option>");
+                        oraM1++;
+                    }
+                    while(oraP1 < oraP2){       
+                        j++;
+                        out.println("<option value = 'ora"+j+"'>"+oraP1+"</option>");
+                        oraP1++;
+                    }
+                    out.println("</select>");
+                 */   
+                }
             }
         }
         catch(Exception e){

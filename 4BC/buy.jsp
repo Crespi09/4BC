@@ -72,7 +72,7 @@
                 out.println("<tr>");
                     out.println("<th>Nome</th>");
                     out.println("<th>Descrizione</th>");
-                    out.println("<th>Quantita Disponibile'</th>");
+                    out.println("<th>Quantita' Disponibile</th>");
                     out.println("<th>Prezzo</th>");
                     out.println("<th>Quantita'</th>");
                 out.println("</tr>");

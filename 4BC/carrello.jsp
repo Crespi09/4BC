@@ -1,7 +1,9 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.sql.*" %>
-<%@ page import = "java.time.format.DateTimeFormatter" %>
-<%@ page import = "java.time.LocalDateTime" %>
+
+<%@ page import="java.sql.Date" %>
+<%@ page import="java.util.*" %> 
+<%@ page import="java.text.*" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -35,13 +37,11 @@
             response.sendRedirect("index.html");
         }
         
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  
-        LocalDateTime now = LocalDateTime.now();  
-
         out.println("<h1> Prodotti nel Carrello di "+usr+": </h1><br>");
 
         String idProd = null;
         String qtaProd = null;
+        String data = null;
 
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         Connection connection=null;
@@ -72,7 +72,6 @@
 
             while(r1.next() && r2.next()){
                 idProd = r2.getString("Comprare.idProdotto");
-                System.out.println("aaaaaaaaaaaaa:" +idProd);
                 qtaProd = r2.getString("Comprare.quantita");
                 
                 out.println("<tr>");
@@ -83,6 +82,7 @@
                                 out.println("<input type='hidden' id='idProdCarrello' name='idProdCarrello' value = '"+idProd+"'>");
                                 
                                 out.println("<input type= 'hidden' id= 'qtaProd' name = 'qtaProd' value = '"+qtaProd+"'>");
+                                out.println("<input type='hidden' id='tipo' name='tipo' value = 'carrello'>");
                                 out.println("<td> <input type= 'submit' class = 'btn1' value= 'Elimina'></td>");
                     out.println("</form>");
                 out.println("</tr>");
@@ -100,6 +100,11 @@
                 <script> alert("Pagamento Effettuato");</script>
                 <% 
                     alertS = null;
+
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    long miliseconds = System.currentTimeMillis();
+		            Date d = new Date(miliseconds);        
+		            data = dateFormat.format(d);
 
                     String querySelectID = "SELECT idProdotto FROM Comprare";
 
@@ -122,14 +127,15 @@
                         int qtComprare = Integer.parseInt(r5.getString("quantita"));
 
                         
-                        String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
+                        //String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
                         String queryDeleteRowComprare = "DELETE FROM Comprare WHERE idProdotto = '"+idProd+"';";
-                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+qtComprare+"' ,'"+now+"' )";
+                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+qtComprare+"' ,#"+data+"# )";
                         
-                        st.executeUpdate(queryUpdateProdotti);
+                        //st.executeUpdate(queryUpdateProdotti);
                         st.executeUpdate(queryDeleteRowComprare);
                         st.executeUpdate(queryUpdateComprati);
                         
+                        response.sendRedirect("buy.jsp");
                     }
 
             }   %> 

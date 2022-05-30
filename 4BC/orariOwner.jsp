@@ -35,9 +35,9 @@
                 <option value = "sabato">Sabato</option>
             </select> <br> <br>
 
-            Orario Mattina: <input type= "text" id = "orarioM" name = "orarioM" placeholder = "8.00-12.00">
-            Orario Pausa: <input type= "text" id = "pausa" name = "pausa" placeholder = "12.00-13.00">
-            Orario Pomeriggio: <input type= "text" id = "orarioP" name = "orarioP" placeholder = "13.00-18.00">
+            Orario Mattina: <input type= "text" id = "orarioM" name = "orarioM" placeholder = "8.00-12.00" required>
+            Orario Pausa: <input type= "text" id = "pausa" name = "pausa" placeholder = "12.00-13.00" required>
+            Orario Pomeriggio: <input type= "text" id = "orarioP" name = "orarioP" placeholder = "13.00-18.00" required>
 
             <br> <br>
             <input type = "submit" id = "btn" name = "btn" value = "Conferma">
@@ -54,10 +54,10 @@
         
         String DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
         
-        String giorno = null;
-        String orarioM = null;
-        String pausa = null;
-        String orarioP = null;
+        String giorno = " ";
+        String orarioM = " ";
+        String pausa = " ";
+        String orarioP = " ";
         String controlloModifica = "false";
         
         Connection connection=null;
@@ -76,6 +76,13 @@
             orarioM = request.getParameter("orarioM");
             pausa = request.getParameter("pausa");
             orarioP = request.getParameter("orarioP");
+
+            /*  CONTROLLO INSERIMENTO CARATTERI VALIDI
+            if((orarioM.contains(":")) || (orarioP.contains(":")) || (pausa.contains(":")) || (orarioM.contains(" ")) || (orarioP.contains(" ")) || (pausa.contains(" ")) ){
+                orarioM = null;
+                orarioP =  null;
+                pausa = null;
+            }*/
 
             if(request.getParameter("controlloModifica") != null){
                 controlloModifica = request.getParameter("controlloModifica");
@@ -112,15 +119,17 @@
                     out.println("</tr>");
                     
                     while(r.next()){   
-                        String idGiorno = r.getString(1); 
+                        String idGiorno = r.getString("ID"); 
                             out.println("<tr>");
-                                out.println("<td>"+r.getString(2)+ "</td>");
-                                out.println("<td>"+r.getString(3)+ "</td>");
-                                out.println("<td>"+r.getString(5)+ "</td>");
-                                out.println("<td>"+r.getString(4)+ "</td>");
+                                out.println("<td>"+r.getString("giorno")+ "</td>");
+                                out.println("<td>"+r.getString("orarioMattina")+ "</td>");
+                                out.println("<td>"+r.getString("orarioPausa")+ "</td>");
+                                out.println("<td>"+r.getString("orarioPomeriggio")+ "</td>");
                            
                                 out.println("<form action='elimina.jsp' method='POST'>");
                                     out.println("<input type='hidden' id='idGiorno' name='idGiorno' value = '"+idGiorno+"'>");
+                                    out.println("<input type='hidden' id='tipo' name='tipo' value = 'orario'>");
+                                    
                                     out.println("<td> <input type= 'submit' class = 'btn1' value= 'Elimina'></td>");
                                 out.println("</form>");
                                 
@@ -131,10 +140,10 @@
                 out.println("<table>");
 
                 out.println("<tr>");
-                    out.println("<th>Nome</th>");
-                    out.println("<th>Descrizione</th>");
-                    out.println("<th>Quantita'</th>");
-                    out.println("<th>Prezzo</th>");
+                    out.println("<th>Giorno</th>");
+                    out.println("<th>Orario Mattina</th>");
+                    out.println("<th>Orario Pausa</th>");
+                    out.println("<th>Orario Pomeriggio</th>");
                     out.println("<th> <a href = 'orariOwner.jsp?controlloModifica=false'><button class = 'btn1'>Indietro</button></a></th>");
                 out.println("</tr>");
                 
@@ -142,12 +151,14 @@
                     String idGiorno = r.getString(1);
                     out.println("<tr>");
                         out.println("<form action='modifica.jsp' method = 'post'>");
-                            out.println("<td><input type = 'text' id = 'giorno' name = 'giorno' value = '"+r.getString(2)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'orarioM' name = 'orarioM' value = '"+r.getString(3)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'pausa' name = 'pausa' value = '"+r.getString(5)+"'></td>");
-                            out.println("<td><input type = 'text' id = 'orarioP' name = 'orarioP' value = '"+r.getString(4)+"'></td>");
-                            out.println("<input type='hidden' id='idGiorno' name='idGiorno' value = '"+idGiorno+"'>");
+                            out.println("<td><input type = 'text' id = 'giorno' name = 'giorno' value = '"+r.getString("giorno")+"'></td>");
+                            out.println("<td><input type = 'text' id = 'orarioM' name = 'orarioM' value = '"+r.getString("orarioMattina")+"'></td>");
+                            out.println("<td><input type = 'text' id = 'pausa' name = 'pausa' value = '"+r.getString("orarioPausa")+"'></td>");
+                            out.println("<td><input type = 'text' id = 'orarioP' name = 'orarioP' value = '"+r.getString("orarioPomeriggio")+"'></td>");
                             
+                            out.println("<input type='hidden' id='idGiorno' name='idGiorno' value = '"+idGiorno+"'>");
+                            out.println("<input type='hidden' id='tipo' name='tipo' value = 'orario'>");
+
                             out.println("<td> <input type= 'submit' class = 'btn1' value= 'Salva'></td>");
                         out.println("</form>");        
                     out.println("</tr>");

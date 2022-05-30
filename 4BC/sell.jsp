@@ -77,9 +77,11 @@
             connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
             
             String query = "SELECT * FROM Prodotto WHERE idProp = '"+idProprietario+"';";
-            String queryControllo = "SELECT nomeProd,idProd FROM Prodotto WHERE nomeProd = '"+nome+"' AND idProp = '"+idProprietario+"';";
+            String queryControllo = "SELECT nomeProd,idProp FROM Prodotto WHERE nomeProd = '"+nome+"' AND idProp = '"+idProprietario+"';";
             String queryInserimento = "INSERT INTO Prodotto(nomeProd,descrizione,quantita,prezzo,idProp) VALUES ('"+nome+"' , '"+descrizione+"' , '"+ quantita+"' , '"+prezzo+"', '"+idProprietario+"')";
-            String queryProdottiVenduti = "SELECT Cliente.nome, Cliente.cognome, Prodotto.nome, Comprare.quantita FROM Prodotto,Comprare,Cliente WHERE (Comprare.idProdotto = Prodotto.ID) AND (Comprare.idCliente = Cliente.ID) AND (Prodotto.idProp) = '"+idProprietario+"';";
+            
+            //String queryProdottiVenduti = "SELECT Cliente.nome, Cliente.cognome, Prodotto.nomeProd, Comprare.quantita FROM Prodotto,Comprare,Cliente WHERE (Comprare.idProdotto = Prodotto.ID) AND (Comprare.idCliente = Cliente.ID) AND (Prodotto.idProp) = '"+idProprietario+"';";
+            String queryProdottiVenduti = "SELECT Cliente.nome, Cliente.cognome, Prodotto.nomeProd, CronologiaComprati.quantita, CronologiaComprati.data FROM Cliente, Prodotto, CronologiaComprati WHERE (Cliente.ID = CronologiaComprati.idCliente) AND (Prodotto.id = CronologiaComprati.idProdotto) AND (Prodotto.idProp = '"+idProprietario+"');";
 
             Statement st = connection.createStatement();
             ResultSet r1 = st.executeQuery(queryControllo);
@@ -95,7 +97,7 @@
                     response.sendRedirect("sell.jsp"); 
                 }
             }else{
-                out.println("Inserisci i valori nei campi");
+                out.println("Inserisci i valori nei campi"); 
             }
 
             
@@ -118,14 +120,16 @@
                         String idProd = r3.getString(1); 
                 
                         out.println("<tr>");
-                            out.println("<td>"+r3.getString(2)+ "</td>");
-                            out.println("<td>"+r3.getString(4)+ "</td>");
-                            out.println("<td>"+r3.getString(6)+ "</td>");
-                            out.println("<td>"+r3.getString(7)+ " €</td>");
+                            out.println("<td>"+r3.getString("nomeProd")+ "</td>");
+                            out.println("<td>"+r3.getString("descrizione")+ "</td>");
+                            out.println("<td>"+r3.getString("quantita")+ "</td>");
+                            out.println("<td>"+r3.getString("prezzo")+ " €</td>");
                                 
                             //elimina
                             out.println("<form action='elimina.jsp' method='POST'>");
                                 out.println("<input type='hidden' id='idProd' name='idProd' value = '"+idProd+"'>");
+                                out.println("<input type='hidden' id='tipo' name='tipo' value = 'sell'>");
+                                
                                 out.println("<td> <input type= 'submit' class = 'btn1' value= 'Elimina'></td>");
                             out.println("</form>");
 
@@ -140,15 +144,21 @@
                         out.println("<th>Nome Acquirente</th>");
                         out.println("<th>Nome Prodotto</th>");
                         out.println("<th>Quantita'</th>");
+                        out.println("<th>Data Aquisto</th>");
                     out.println("</tr>");
 
                     while(r4.next()){
                         String nomeCliente = r4.getString("Cliente.nome") +" "+r4.getString("Cliente.cognome");
+                        
+                        String data = r4.getString("CronologiaComprati.data");
+                        String[] split = data.split(" ");
+                        String data1 = split[0];
 
                         out.println("<tr>");
                             out.println("<td>"+nomeCliente+ "</td>");
                             out.println("<td>"+r4.getString("Prodotto.nomeProd")+ "</td>");
-                            out.println("<td>"+r4.getString("Comprare.quantita")+ "</td>");
+                            out.println("<td>"+r4.getString("CronologiaComprati.quantita")+ "</td>");
+                            out.println("<td>"+split[0]+ "</td>");
                         out.println("</tr>");
                     }
 
@@ -166,16 +176,19 @@
                 out.println("</tr>");
                 
                 while(r3.next()){   
-                    String idProd = r3.getString(1); 
+                    String idProd = r3.getString("ID"); 
                     System.out.println("id:"+idProd);
                         out.println("<tr>");
                             out.println("<form action='modifica.jsp' method = 'post'>");
-                                out.println("<td><input type = 'text' id = 'nome' name = 'nome' value = '"+r3.getString(2)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'descrizione' name = 'descrizione' value = '"+r3.getString(4)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'quantita' name = 'quantita' value = '"+r3.getString(6)+"'></td>");
-                                out.println("<td><input type = 'text' id = 'prezzo' name = 'prezzo' value = '"+r3.getString(7)+"'></td>");
+                                out.println("<td><input type = 'text' id = 'nome' name = 'nome' value = '"+r3.getString("nomeProd")+"'></td>");
+                                out.println("<td><input type = 'text' id = 'descrizione' name = 'descrizione' value = '"+r3.getString("descrizione")+"'></td>");
+                                out.println("<td><input type = 'text' id = 'quantita' name = 'quantita' value = '"+r3.getString("quantita")+"'></td>");
+                                out.println("<td><input type = 'text' id = 'prezzo' name = 'prezzo' value = '"+r3.getString("quantita")+"'></td>");
+                                
                                 out.println("<input type='hidden' id='idProd' name='idProd' value = '"+idProd+"'>");
-                                    
+                                out.println("<input type='hidden' id='idProp' name='idProp' value = '"+idProprietario+"'>");
+                                out.println("<input type='hidden' id='tipo' name='tipo' value = 'sell'>");
+
                                 out.println("<td> <input type= 'submit' class = 'btn1' value= 'Salva'></td>");
                             out.println("</form>"); 
                             

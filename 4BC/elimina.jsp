@@ -17,6 +17,9 @@
             response.sendRedirect("index.html");
         }
         
+        String tipo = null;
+
+
         String idProdotto = null;
         String idGiorno = null;
         String idProdCarrello = null;
@@ -33,37 +36,52 @@
         }
         try{
             
-            idGiorno = request.getParameter("idGiorno");  
-            idProdotto = request.getParameter("idProd");
-            idProdCarrello = request.getParameter("idProdCarrello");
-            qtaProd = request.getParameter("qtaProd");
+            tipo = request.getParameter("tipo");
 
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");
-        
-            String queryEliminaProdotto = "DELETE FROM Prodotto WHERE id = '"+idProdotto+"';";
-            String queryEliminaOrario = "DELETE FROM Orari WHERE codice = '"+idGiorno+"';";
-            String queryEliminaProdottoCarrello = "DELETE FROM Comprare WHERE idProdotto = '"+idProdCarrello+"';";
-            String queryModifica = "UPDATE Prodotto SET quantita = '"+Integer.parseInt(qtaProd)+"' WHERE ID = '"idProdCarrello"';";
-            Statement st= connection.createStatement();
+            connection = DriverManager.getConnection("jdbc:ucanaccess://" + request.getServletContext().getRealPath("/") + "Parrucchiere.accdb");            
             
-            if(idGiorno != null){
-                st.executeUpdate(queryEliminaOrario);
-                idGiorno = null;
-                response.sendRedirect("orariOwner.jsp");
+            Statement st= connection.createStatement();
+    
+            switch (tipo){
+                case "sell":
+                    idProdotto = request.getParameter("idProd");
+                    String queryEliminaProdotto = "DELETE FROM Prodotto WHERE ID = '"+Integer.parseInt(idProdotto)+"';";
+                    st.executeUpdate(queryEliminaProdotto);
+                    idProdotto = null;
+                    response.sendRedirect("sell.jsp");
+                break;
+
+                case "orario":
+                    idGiorno = request.getParameter("idGiorno"); 
+                    String queryEliminaOrario = "DELETE FROM Orari WHERE ID = '"+Integer.parseInt(idGiorno)+"';";
+                    st.executeUpdate(queryEliminaOrario);
+                    idGiorno = null;
+                    response.sendRedirect("orariOwner.jsp");
+                break;
+
+                case "carrello":
+                    idProdCarrello = request.getParameter("idProdCarrello");
+                    qtaProd = request.getParameter("qtaProd");
+                    String querySelectQta = "SELECT quantita FROM Prodotto WHERE id = '"+idProdCarrello+"';";
+                    String queryEliminaProdottoCarrello = "DELETE FROM Comprare WHERE idProdotto = '"+Integer.parseInt(idProdCarrello)+"';";
+                    ResultSet r1 = st.executeQuery(querySelectQta);
+                    r1.next();
+                    int qtaProdCarrello = Integer.parseInt(r1.getString("quantita"));    
+                    String queryModifica = "UPDATE Prodotto SET quantita = '"+(qtaProdCarrello + Integer.parseInt(qtaProd))+"' WHERE ID = '"+Integer.parseInt(idProdCarrello)+"';";
+                    
+                    st.executeUpdate(queryEliminaProdottoCarrello);
+                    st.executeUpdate(queryModifica);
+                    idProdCarrello = null;
+                    //queryUpdateQTAProdotti = null;
+                    response.sendRedirect("carrello.jsp");
+                break;
+
+                default:
+                    out.println("");
+
+
             }
-            if(idProdotto != null){
-                st.executeUpdate(queryEliminaProdotto);
-                idProdotto = null;
-                response.sendRedirect("sell.jsp");
-            }
-            if(idProdCarrello != null){
-                st.executeUpdate(queryEliminaProdottoCarrello);
-                st.executeUpdate(queryUpdateQTAProdotti);
-                idProdCarrello = null;
-                queryUpdateQTAProdotti = null;
-                response.sendRedirect("carrello.jsp");
-            }
-        
+            
         }
         catch(Exception e){
             out.println(e);
