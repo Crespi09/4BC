@@ -9,7 +9,6 @@
 
 <!DOCTYPE html>
 
-<!--FARE QUERY DOVE VADO A VISUALIZZARE LA TABELLA Comprare, AGGIUNGERE POI UN TASTO PAGA, ATTRAVERSO IL QUALE ATTUARE IL PAGAMENTO -->
 <html>
     <head>
         <title>Carrello</title>
@@ -101,15 +100,19 @@
                 <% 
                     alertS = null;
 
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     long miliseconds = System.currentTimeMillis();
 		            Date d = new Date(miliseconds);        
 		            data = dateFormat.format(d);
+
+                    String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, data) VALUES ('"+idCliente+"',#"+data+"# )";
+                    st.executeUpdate(queryUpdateComprati);
 
                     String querySelectID = "SELECT idProdotto FROM Comprare";
 
                     ResultSet r3 = st.executeQuery(querySelectID);
 
+                    Double prezzoTotale = 0.0;
                     while(r3.next()){
 
                         idProd = r3.getString("idProdotto");
@@ -129,15 +132,33 @@
                         
                         //String queryUpdateProdotti = "UPDATE Prodotto SET quantita = '"+(qtProdotto - qtComprare)+"' WHERE id = '"+idProd+"';";
                         String queryDeleteRowComprare = "DELETE FROM Comprare WHERE idProdotto = '"+idProd+"';";
-                        String queryUpdateComprati = "INSERT INTO CronologiaComprati (idCliente, idProdotto, quantita, data) VALUES ('"+idCliente+"', '"+idProd+"', '"+qtComprare+"' ,#"+data+"# )";
+                       
+
+                        String querySelectIDScontrino = "SELECT ID FROM CronologiaComprati WHERE idCliente = '"+idCliente+"' AND data = #"+data+"#";
                         
+                        ResultSet r6 = st.executeQuery(querySelectIDScontrino);
+                        r6.next();
+                        String idScontrino = r6.getString("ID");
+                        String queryInsertProdottiOrdinati = "INSERT INTO ProdottiOrdinati (idOrdine, idProd, quantita) VALUES ('"+idScontrino+"', '"+idProd+"', '"+qtComprare+"')";
+                        /*
+                        String selezionePrezzoTotale = "SELECT Prodotto.prezzo, ProdottiOrdinati.quantita FROM Prodotto INNER JOIN (CronologiaComprati INNER JOIN ProdottiOrdinati ON CronologiaComprati.ID=ProdottiOrdinati.idOrdine) ON Prodotto.ID=ProdottiOrdinati.idProd WHERE idOrdine='"+idScontrino+"';";
+                        
+                        ResultSet r7 = st.executeQuery(querySelectIDScontrino);
+                        r7.next();
+                        Double prezzo = Double.parseDouble(r7.getString("Prodotto.prezzo"));
+                        Double quantita = Double.parseDouble(r7.getString("ProdottiOrdinati.quantita"));
+
+                        prezzoTotale =+ (prezzo*quantita);
+*/
                         //st.executeUpdate(queryUpdateProdotti);
                         st.executeUpdate(queryDeleteRowComprare);
-                        st.executeUpdate(queryUpdateComprati);
+                        st.executeUpdate(queryInsertProdottiOrdinati);
                         
                         response.sendRedirect("buy.jsp");
                     }
-
+/*
+                    String queryInsertPrezzoTotale = "INSERT INTO CronologiaComprati (prezzoTotale) VALUES ('"+prezzoTotale+"')";
+                    st.executeUpdate(queryInsertPrezzoTotale);*/
             }   %> 
             
         <%
